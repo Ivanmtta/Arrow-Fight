@@ -6,8 +6,8 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 
 /**
- * Class used to initialize a server socket and start listening for sockets
- * to connect to the server.
+ * Class used to initialize a server socket and start listening for client
+ * sockets to connect to the server.
  */
 public class ServerThread extends Thread {
 
@@ -20,7 +20,7 @@ public class ServerThread extends Thread {
      * Constructor used to initialize server thread to start listening
      * to client sockets.
      * @param context Reference to the context of the MainActivity to link listener.
-     * @param bluetoothAdapter Local device blutooth adapter.
+     * @param bluetoothAdapter Local device bluetooth adapter
      */
     public ServerThread(Context context, BluetoothAdapter bluetoothAdapter) {
         listener = (ServerListener) context;
