@@ -8,8 +8,8 @@ import android.graphics.Paint;
 public class Slingshot {
 
     private Vector2 position;
-    private float width;
-    private float height;
+    public float width;
+    public float height;
     private Bitmap spriteBack;
     private Bitmap spriteFront;
     private Vector2 touch;

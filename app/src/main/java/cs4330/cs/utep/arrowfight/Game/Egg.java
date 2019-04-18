@@ -22,7 +22,7 @@ public class Egg {
     }
 
     public void update(){
-        if (inAir){
+        if(inAir){
             position.add(velocity);
             velocity.setY(velocity.getY() + 0.35f);
             velocity.setX(velocity.getX() * 0.99f);

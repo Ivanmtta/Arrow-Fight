@@ -9,6 +9,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cs4330.cs.utep.arrowfight.ConnectedThread;
 import cs4330.cs.utep.arrowfight.MainActivity;
 import cs4330.cs.utep.arrowfight.R;
@@ -25,6 +28,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private final int BLUE = Color.rgb(153, 182, 255);
 
     private Slingshot slingshot;
+    private List<Egg> opponentEggs;
 
     private ConnectedThread connectedThread;
 
@@ -37,6 +41,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         setFocusable(true);
         connectedThread = new ConnectedThread(context, MainActivity.connectedSocket);
         connectedThread.start();
+        opponentEggs = new ArrayList<>();
     }
 
     @Override
@@ -71,6 +76,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void dataReceived(String data){
+        String[] dataList = data.split("/");
+        if(dataList[0].equals("EGG")){
+            float x = Float.parseFloat(dataList[1]);
+            float y = Float.parseFloat(dataList[2]);
+            float velX = Float.parseFloat(dataList[3]);
+            float velY = Float.parseFloat(dataList[4]);
+            Egg tempEgg = new Egg((int)x, (int)y, (int)slingshot.width / 2, (int)slingshot.height / 3,
+                    BitmapFactory.decodeResource(getResources(), R.drawable.egg));
+            tempEgg.velocity.set(-velX, velY);
+            opponentEggs.add(tempEgg);
+        }
     }
 
     @Override
@@ -90,8 +106,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         return true;
     }
 
-
     public void update(){
+        Egg egg = slingshot.egg;
+        if(egg.position.getX() > WIDTH){
+            connectedThread.send("EGG/"+ egg.position.getX() + "/" + egg.position.getY() +
+                    "/" + egg.velocity.getX() + "/" + egg.velocity.getY());
+        }
+        for(int i = 0; i < opponentEggs.size(); i++){
+            opponentEggs.get(i).update();
+            if(opponentEggs.get(i).position.getY() > HEIGHT || opponentEggs.get(i).position.getX() < 0){
+                opponentEggs.remove(i);
+            }
+        }
         slingshot.update();
     }
 
