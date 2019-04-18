@@ -34,7 +34,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public GameView(Context context){
         super(context);
-        /* Set callback to the surfaceholder to track events */
+        /* Set callback to the SurfaceHolder to track events */
         getHolder().addCallback(this);
         gameThread = new MainGameThread(getHolder(), this);
         /* Make window focusable so it can handle touch events */
@@ -125,6 +125,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         if(canvas != null){
             drawBackground(canvas);
             slingshot.render(canvas, paint);
+            for(int i = 0; i < opponentEggs.size(); i++){
+                opponentEggs.get(i).render(canvas);
+            }
         }
     }
 
