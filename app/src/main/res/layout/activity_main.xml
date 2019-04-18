@@ -5,25 +5,22 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/menu">
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:onClick="scanForDevices"
-        android:text="@string/scan" />
+        android:background="@drawable/find_button" />
 
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:onClick="makeDeviceDiscoverable"
-        android:text="@string/host" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="sendTestMessage"
-        android:text="@string/test"/>
+        android:background="@drawable/host_button"/>
 
     <ListView
         android:id="@+id/devicesList"

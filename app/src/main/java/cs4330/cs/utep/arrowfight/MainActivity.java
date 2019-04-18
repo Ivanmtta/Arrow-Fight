@@ -1,6 +1,7 @@
 package cs4330.cs.utep.arrowfight;
 
 import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -8,12 +9,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -21,7 +24,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements ClientThread.ClientListener, ServerThread.ServerListener {
+import cs4330.cs.utep.arrowfight.Game.GameActivity;
+
+/**
+ * Entry point and menu of the application that allows the user
+ * to create a new game or to join an existing game.
+ */
+public class MainActivity extends Activity implements ClientThread.ClientListener, ServerThread.ServerListener {
 
     /* Constants to requests android features */
     private final int REQUEST_ENABLE_BLUETOOTH = 0;
@@ -37,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements ClientThread.Clie
     /* App name and App UUID to open a socket connection */
     public static final String APP_NAME = "ArrowFight";
     public static final UUID APP_UUID = UUID.fromString("7bbc96be-5366-11e9-8647-d663bd873d93");
+    /* Flag to check if receiver has been register */
+    private boolean receiverEnabled;
 
     /**
      * Initialize activity's layout and initialize bluetooth connection.
@@ -57,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements ClientThread.Clie
         devicesList.setOnItemClickListener((parent, view, position, id) -> {
             /* Get the information of the current device selected */
             String deviceInfo = parent.getItemAtPosition(position).toString();
-            /* Get the address of the selected device from the information string */
             String deviceAddress = deviceInfo.substring(deviceInfo.length() - 17);
             /* Initialize a bluetooth device using the selected device address */
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
@@ -165,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements ClientThread.Clie
         /* Initialize intent filter to find devices and register the receiver */
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(receiver, filter);
+        receiverEnabled = true;
         /* start discovering bluetooth devices */
         bluetoothAdapter.startDiscovery();
         displayMessage("Scanning for devices");
@@ -206,7 +217,9 @@ public class MainActivity extends AppCompatActivity implements ClientThread.Clie
     protected void onDestroy() {
         super.onDestroy();
         /* Stop listening from bluetooth devices */
-        unregisterReceiver(receiver);
+        if(receiverEnabled) {
+            unregisterReceiver(receiver);
+        }
     }
 
     /**
