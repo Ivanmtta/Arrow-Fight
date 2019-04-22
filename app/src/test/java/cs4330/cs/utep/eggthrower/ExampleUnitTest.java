@@ -1,4 +1,4 @@
-package cs4330.cs.utep.arrowfight;
+package cs4330.cs.utep.eggthrower;
 
 import org.junit.Test;
 
