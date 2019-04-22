@@ -1,4 +1,4 @@
-package cs4330.cs.utep.arrowfight;
+package cs4330.cs.utep.eggthrower;
 
 import android.Manifest;
 import android.app.Activity;
@@ -9,14 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -24,7 +20,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import cs4330.cs.utep.arrowfight.Game.GameActivity;
+import cs4330.cs.utep.eggthrower.Game.GameActivity;
 
 /**
  * Entry point and menu of the application that allows the user

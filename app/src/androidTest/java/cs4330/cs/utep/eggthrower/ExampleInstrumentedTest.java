@@ -1,4 +1,4 @@
-package cs4330.cs.utep.arrowfight;
+package cs4330.cs.utep.eggthrower;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

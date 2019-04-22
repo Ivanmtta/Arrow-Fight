@@ -1,9 +1,9 @@
-package cs4330.cs.utep.arrowfight.Game;
+package cs4330.cs.utep.eggthrower.Game;
 
 import android.app.Activity;
 import android.os.Bundle;
 
-import cs4330.cs.utep.arrowfight.ConnectedThread;
+import cs4330.cs.utep.eggthrower.ConnectedThread;
 
 public class GameActivity extends Activity implements ConnectedThread.ConnectedListener {
 

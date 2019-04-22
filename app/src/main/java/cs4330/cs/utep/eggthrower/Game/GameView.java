@@ -1,4 +1,4 @@
-package cs4330.cs.utep.arrowfight.Game;
+package cs4330.cs.utep.eggthrower.Game;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
@@ -12,15 +12,16 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.List;
 
-import cs4330.cs.utep.arrowfight.ConnectedThread;
-import cs4330.cs.utep.arrowfight.MainActivity;
-import cs4330.cs.utep.arrowfight.R;
+import cs4330.cs.utep.eggthrower.ConnectedThread;
+import cs4330.cs.utep.eggthrower.MainActivity;
+import cs4330.cs.utep.eggthrower.R;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private MainGameThread gameThread;
     public static float WIDTH;
     public static float HEIGHT;
+    public static float SCALE_RATIO;
 
     private Paint paint;
     private final int WHITE = Color.rgb(240, 240, 242);
@@ -28,6 +29,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private final int BLUE = Color.rgb(153, 182, 255);
 
     private Slingshot slingshot;
+    private Basket basket;
     private List<Egg> opponentEggs;
 
     private ConnectedThread connectedThread;
@@ -49,10 +51,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         paint = new Paint();
         WIDTH = getWidth();
         HEIGHT = getHeight();
-        slingshot = new Slingshot((int)(WIDTH / 12), (int)(HEIGHT / 3),
+        SCALE_RATIO = 1920f / WIDTH;
+
+        slingshot = new Slingshot(
                 BitmapFactory.decodeResource(getResources(), R.drawable.slingshot_back),
                 BitmapFactory.decodeResource(getResources(), R.drawable.slingshot_front),
                 BitmapFactory.decodeResource(getResources(), R.drawable.egg));
+        basket = new Basket((int)(152f / SCALE_RATIO), (int)(348f / SCALE_RATIO),
+                BitmapFactory.decodeResource(getResources(), R.drawable.basket));
         gameThread.setRunning(true);
         gameThread.start();
     }
@@ -78,13 +84,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void dataReceived(String data){
         String[] dataList = data.split("/");
         if(dataList[0].equals("EGG")){
-            float x = Float.parseFloat(dataList[1]);
-            float y = Float.parseFloat(dataList[2]);
-            float velX = Float.parseFloat(dataList[3]);
-            float velY = Float.parseFloat(dataList[4]);
-            Egg tempEgg = new Egg((int)x, (int)y, (int)slingshot.width / 2, (int)slingshot.height / 3,
+            float y = Float.parseFloat(dataList[1]);
+            float velX = Float.parseFloat(dataList[2]) * Float.parseFloat(dataList[4]);
+            float velY = Float.parseFloat(dataList[3]) * Float.parseFloat(dataList[4]);
+            Egg tempEgg = new Egg((int)WIDTH, (int)y, (int)slingshot.width / 2, (int)slingshot.height / 3,
                     BitmapFactory.decodeResource(getResources(), R.drawable.egg));
             tempEgg.velocity.set(-velX, velY);
+            tempEgg.inAir = true;
             opponentEggs.add(tempEgg);
         }
     }
@@ -109,8 +115,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void update(){
         Egg egg = slingshot.egg;
         if(egg.position.getX() > WIDTH){
-            connectedThread.send("EGG/"+ egg.position.getX() + "/" + egg.position.getY() +
-                    "/" + egg.velocity.getX() + "/" + egg.velocity.getY());
+            connectedThread.send("EGG/" + egg.position.getY() +
+                    "/" + egg.velocity.getX() + "/" + egg.velocity.getY() + "/" + GameView.SCALE_RATIO);
         }
         for(int i = 0; i < opponentEggs.size(); i++){
             opponentEggs.get(i).update();
@@ -128,6 +134,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             for(int i = 0; i < opponentEggs.size(); i++){
                 opponentEggs.get(i).render(canvas);
             }
+            basket.render(canvas);
         }
     }
 

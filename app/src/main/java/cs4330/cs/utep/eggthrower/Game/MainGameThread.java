@@ -1,4 +1,4 @@
-package cs4330.cs.utep.arrowfight.Game;
+package cs4330.cs.utep.eggthrower.Game;
 
 import android.graphics.Canvas;
 import android.util.Log;
