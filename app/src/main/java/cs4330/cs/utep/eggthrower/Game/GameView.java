@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -33,6 +34,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private Slingshot slingshot;
     private Basket basket;
     private List<Egg> opponentEggs;
+    private int score;
 
     private ConnectedThread connectedThread;
 
@@ -51,6 +53,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceCreated(SurfaceHolder holder){
         paint = new Paint();
+//        Typeface font = Typeface.createFromAsset(getContext().getAssets(), "font/font.ttf");
+//        paint.setTypeface(font);
         WIDTH = getWidth();
         HEIGHT = getHeight();
         SCALE_RATIO = 1920f / WIDTH;
@@ -109,7 +113,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             opponentEggs.add(tempEgg);
         }
         else if(dataList[0].equals("POINT")){
-
+            score ++;
         }
     }
 
@@ -154,6 +158,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                     (int)(currentEgg.position.getY() + currentEgg.height)))){
                 connectedThread.send("POINT");
                 opponentEggs.remove(currentEgg);
+                basket.displayAnimation = true;
             }
         }
         slingshot.update();
@@ -168,12 +173,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 currentEgg.render(canvas);
             }
             basket.render(canvas);
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(64f);
+            canvas.drawText(String.valueOf(score), 100, 100, paint);
         }
     }
 
     public void sendEggInformation(Egg egg){
-        connectedThread.send("EGG/" + egg.position.getY() +
-                "/" + egg.velocity.getX() + "/" + egg.velocity.getY() + "/" + GameView.SCALE_RATIO);
+        connectedThread.send("EGG/" + egg.position.getY() + "/" + egg.velocity.getX() + "/" + egg.velocity.getY() + "/" + GameView.SCALE_RATIO);
     }
 
     public void drawBackground(Canvas canvas){

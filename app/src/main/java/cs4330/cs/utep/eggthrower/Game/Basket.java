@@ -15,6 +15,10 @@ public class Basket {
     private int tics;
     private float[] basketStates;
     private int stateIndex = 0;
+    public boolean displayAnimation;
+    private int animationTics;
+    private boolean flashSprite;
+    private int maxFlashes;
 
     public Basket(int width, int height, Bitmap sprite){
         basketStates = new float[]{0, (GameView.HEIGHT / 2f) - (height / 2f), GameView.HEIGHT - height};
@@ -35,11 +39,24 @@ public class Basket {
             position.setY(basketStates[stateIndex]);
             tics = 0;
         }
+        if(displayAnimation){
+            if(animationTics >= 20){
+                flashSprite = !flashSprite;
+                maxFlashes ++;
+                animationTics = 0;
+            }
+            animationTics ++;
+        }
+        if(maxFlashes >= 5){
+            displayAnimation = false;
+        }
         tics ++;
     }
 
     public void render(Canvas canvas){
-        canvas.drawBitmap(sprite, position.getX(), position.getY(), null);
+        if(!flashSprite){
+            canvas.drawBitmap(sprite, position.getX(), position.getY(), null);
+        }
     }
 
     public boolean contains(Rect rectangle){
