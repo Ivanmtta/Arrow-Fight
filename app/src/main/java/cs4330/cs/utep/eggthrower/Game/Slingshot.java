@@ -1,4 +1,4 @@
-package cs4330.cs.utep.arrowfight.Game;
+package cs4330.cs.utep.eggthrower.Game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,8 +8,8 @@ import android.graphics.Paint;
 public class Slingshot {
 
     private Vector2 position;
-    public float width;
-    public float height;
+    public int width;
+    public int height;
     private Bitmap spriteBack;
     private Bitmap spriteFront;
     private Vector2 touch;
@@ -19,28 +19,30 @@ public class Slingshot {
     private float pivot;
     private Bitmap eggSprite;
 
-    public Slingshot(int width, int height, Bitmap spriteBack, Bitmap spriteFront, Bitmap eggSprite){
-        position = new Vector2(GameView.WIDTH / 4, GameView.HEIGHT / 3);
-        this.width = width;
-        this.height = height;
+    public Slingshot(Bitmap spriteBack, Bitmap spriteFront, Bitmap eggSprite){
+        width = (int)(133f / GameView.SCALE_RATIO);
+        height = (int)(256f / GameView.SCALE_RATIO);
+        position = new Vector2(620f / GameView.SCALE_RATIO, 420f / GameView.SCALE_RATIO);
         this.spriteBack = Bitmap.createScaledBitmap(spriteBack, width, height, true);
         this.spriteFront = Bitmap.createScaledBitmap(spriteFront, width, height, true);
         touch = new Vector2(0, 0);
-        egg = new Egg((int) (position.getX() + width / 2) - (width / 4),
-                (int) (position.getY()+ height / 2) - (height / 3) - (height / 16),
-                width / 2, height / 3, eggSprite);
+        egg = new Egg((int)(position.getX() + (30 / GameView.SCALE_RATIO)),
+                      (int)(position.getY() + (30 / GameView.SCALE_RATIO)),
+                      (int)(68 / GameView.SCALE_RATIO), (int)(82 / GameView.SCALE_RATIO),
+                      eggSprite);
         this.eggSprite = eggSprite;
-        pivot = (position.getY()+ height / 2f) - (height / 3f) - (height / 16f);
+        pivot = (position.getY() + (30f / GameView.SCALE_RATIO));
     }
 
     public void update(){
         if(pressed){
-            angle = Math.atan2((pivot - touch.getY()), (position.getX() + (width / 2)) - touch.getX());
+            angle = Math.atan2((pivot - touch.getY()), (position.getX() + (width / 2f)) - touch.getX());
         }
-        if(egg.position.getX() > GameView.WIDTH || egg.position.getX() < -egg.width || egg.position.getY() > GameView.HEIGHT || egg.position.getY() < -egg.height){
-            egg = new Egg((int) ((position.getX() + width / 2) - (width / 4)),
-                    (int) ((position.getY()+ height / 2) - (height / 3) - (height / 16)),
-                    (int) (width / 2), (int) (height / 3), eggSprite);
+        if(egg.position.getX() > GameView.WIDTH || egg.position.getX() < -egg.width || egg.position.getY() > GameView.HEIGHT || egg.position.getY() < -GameView.WIDTH / 2){
+            egg = new Egg((int)(position.getX() + (30 / GameView.SCALE_RATIO)),
+                    (int)(position.getY() + (30 / GameView.SCALE_RATIO)),
+                    (int)(68 / GameView.SCALE_RATIO), (int)(82 / GameView.SCALE_RATIO),
+                    eggSprite);
         }
         egg.update();
     }
@@ -48,9 +50,9 @@ public class Slingshot {
     public void render(Canvas canvas, Paint paint){
         if(pressed){
             paint.setColor(Color.GRAY);
-            paint.setStrokeWidth(width / 30);
-            canvas.drawLine(position.getX(), position.getY() + width / 4, touch.getX(), touch.getY(), paint);
-            canvas.drawLine(position.getX() + width, position.getY() + width / 4, touch.getX(), touch.getY(), paint);
+            paint.setStrokeWidth(width / 30f);
+            canvas.drawLine(position.getX(), pivot, touch.getX(), touch.getY(), paint);
+            canvas.drawLine(position.getX() + width, pivot, touch.getX(), touch.getY(), paint);
         }
         canvas.drawBitmap(spriteBack, position.getX(), position.getY(), null);
         egg.render(canvas);

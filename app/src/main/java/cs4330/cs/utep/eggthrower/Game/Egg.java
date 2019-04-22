@@ -1,4 +1,4 @@
-package cs4330.cs.utep.arrowfight.Game;
+package cs4330.cs.utep.eggthrower.Game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,7 +11,7 @@ public class Egg {
     public float height;
     private Bitmap sprite;
     public boolean moving;
-    private boolean inAir;
+    public boolean inAir;
 
     public Egg(int x, int y, int width, int height, Bitmap sprite){
         position = new Vector2(x, y);
@@ -40,7 +40,8 @@ public class Egg {
     }
 
     public boolean contains(Vector2 vector){
-        return (position.getX() <= vector.getX()) && (vector.getX() < position.getX() + width) &&
-                ((position.getY() <= vector.getY()) && (position.getY() < position.getY() + height));
+        int extra = (int)(50f / GameView.SCALE_RATIO);
+        return (position.getX() - extra <= vector.getX()) && (vector.getX() < position.getX() + width + extra) &&
+                ((position.getY() - extra <= vector.getY()) && (position.getY() < position.getY() + height + extra));
     }
 }
