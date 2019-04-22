@@ -1,6 +1,3 @@
 <resources>
-    <string name="app_name">Arrow Fight</string>
-    <string name="scan">Scan Games</string>
-    <string name="host">Host Game</string>
-    <string name="test">Send test message</string>
+    <string name="app_name">Egg Thrower</string>
 </resources>
