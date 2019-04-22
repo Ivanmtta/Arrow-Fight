@@ -45,6 +45,8 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
     /* Flag to check if receiver has been register */
     private boolean receiverEnabled;
 
+    public static String CONNECTION;
+
     /**
      * Initialize activity's layout and initialize bluetooth connection.
      * @param savedInstanceState data from the previews close activity
@@ -70,6 +72,7 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
             /* Initialize a client thread that will initialize a socket using the server connection */
             ClientThread client = new ClientThread(this, device, bluetoothAdapter);
             client.start();
+            CONNECTION = "CLIENT";
         });
         /* Initialize bluetooth service */
         initializeBluetooth();
@@ -191,6 +194,7 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
         /* Initialize a server thread that will initialize listen to client sockets */
         ServerThread server = new ServerThread(this, bluetoothAdapter);
         server.start();
+        CONNECTION = "SERVER";
     }
 
     /**

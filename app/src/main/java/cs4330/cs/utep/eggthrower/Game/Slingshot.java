@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import cs4330.cs.utep.eggthrower.MainActivity;
+
 public class Slingshot {
 
     private Vector2 position;
@@ -22,7 +24,12 @@ public class Slingshot {
     public Slingshot(Bitmap spriteBack, Bitmap spriteFront, Bitmap eggSprite){
         width = (int)(133f / GameView.SCALE_RATIO);
         height = (int)(256f / GameView.SCALE_RATIO);
-        position = new Vector2(620f / GameView.SCALE_RATIO, 420f / GameView.SCALE_RATIO);
+        if(MainActivity.CONNECTION.equals("SERVER")){
+            position = new Vector2(620f / GameView.SCALE_RATIO, 420f / GameView.SCALE_RATIO);
+        }
+        else{
+            position = new Vector2(1300f / GameView.SCALE_RATIO, 420f / GameView.SCALE_RATIO);
+        }
         this.spriteBack = Bitmap.createScaledBitmap(spriteBack, width, height, true);
         this.spriteFront = Bitmap.createScaledBitmap(spriteFront, width, height, true);
         touch = new Vector2(0, 0);

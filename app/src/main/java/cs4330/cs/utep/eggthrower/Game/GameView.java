@@ -1,10 +1,12 @@
 package cs4330.cs.utep.eggthrower.Game;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -57,8 +59,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 BitmapFactory.decodeResource(getResources(), R.drawable.slingshot_back),
                 BitmapFactory.decodeResource(getResources(), R.drawable.slingshot_front),
                 BitmapFactory.decodeResource(getResources(), R.drawable.egg));
-        basket = new Basket((int)(152f / SCALE_RATIO), (int)(348f / SCALE_RATIO),
-                BitmapFactory.decodeResource(getResources(), R.drawable.basket));
+        Bitmap basketSprite;
+        if(MainActivity.CONNECTION.equals("SERVER")){
+            basketSprite = BitmapFactory.decodeResource(getResources(), R.drawable.basket);
+        }
+        else{
+            basketSprite = BitmapFactory.decodeResource(getResources(), R.drawable.basketclient);
+        }
+        basket = new Basket((int)(152f / SCALE_RATIO), (int)(348f / SCALE_RATIO), basketSprite);
         gameThread.setRunning(true);
         gameThread.start();
     }
@@ -87,11 +95,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             float y = Float.parseFloat(dataList[1]);
             float velX = Float.parseFloat(dataList[2]) * Float.parseFloat(dataList[4]);
             float velY = Float.parseFloat(dataList[3]) * Float.parseFloat(dataList[4]);
-            Egg tempEgg = new Egg((int)WIDTH, (int)y, (int)slingshot.width / 2, (int)slingshot.height / 3,
+            int x;
+            if(MainActivity.CONNECTION.equals("SERVER")){
+                x = (int)(WIDTH - slingshot.egg.width);
+            }
+            else{
+                x = (int)(-64f / SCALE_RATIO);
+            }
+            Egg tempEgg = new Egg(x, (int)y, (int)slingshot.width / 2, (int)slingshot.height / 3,
                     BitmapFactory.decodeResource(getResources(), R.drawable.egg));
-            tempEgg.velocity.set(-velX, velY);
+            tempEgg.velocity.set(velX, velY);
             tempEgg.inAir = true;
             opponentEggs.add(tempEgg);
+        }
+        else if(dataList[0].equals("POINT")){
+
         }
     }
 
@@ -114,28 +132,48 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
         Egg egg = slingshot.egg;
-        if(egg.position.getX() > WIDTH){
-            connectedThread.send("EGG/" + egg.position.getY() +
-                    "/" + egg.velocity.getX() + "/" + egg.velocity.getY() + "/" + GameView.SCALE_RATIO);
+        if(MainActivity.CONNECTION.equals("SERVER")){
+            if(egg.position.getX() > WIDTH){
+                sendEggInformation(egg);
+            }
         }
-        for(int i = 0; i < opponentEggs.size(); i++){
-            opponentEggs.get(i).update();
-            if(opponentEggs.get(i).position.getY() > HEIGHT || opponentEggs.get(i).position.getX() < 0){
-                opponentEggs.remove(i);
+        else{
+            if(egg.position.getX() < -egg.width){
+                sendEggInformation(egg);
+            }
+        }
+        for(Egg currentEgg : opponentEggs){
+            currentEgg.update();
+            if(currentEgg.position.getY() > HEIGHT){
+                opponentEggs.remove(currentEgg);
+            }
+            if(basket.contains(new Rect(
+                    (int)currentEgg.position.getX(),
+                    (int)currentEgg.position.getY(),
+                    (int)(currentEgg.position.getX() + currentEgg.width),
+                    (int)(currentEgg.position.getY() + currentEgg.height)))){
+                connectedThread.send("POINT");
+                opponentEggs.remove(currentEgg);
             }
         }
         slingshot.update();
+        basket.update();
     }
 
     public void render(Canvas canvas){
         if(canvas != null){
             drawBackground(canvas);
             slingshot.render(canvas, paint);
-            for(int i = 0; i < opponentEggs.size(); i++){
-                opponentEggs.get(i).render(canvas);
+            for(Egg currentEgg : opponentEggs){
+                currentEgg.render(canvas);
             }
             basket.render(canvas);
         }
+    }
+
+    public void sendEggInformation(Egg egg){
+        connectedThread.send("EGG/" + egg.position.getY() +
+                "/" + egg.velocity.getX() + "/" + egg.velocity.getY() + "/" + GameView.SCALE_RATIO);
     }
 
     public void drawBackground(Canvas canvas){
