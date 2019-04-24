@@ -1,6 +1,7 @@
 package cs4330.cs.utep.eggthrower.Game;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -33,8 +34,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private Slingshot slingshot;
     private Basket basket;
-    private List<Egg> opponentEggs;
     private int score;
+    public static List<Egg> opponentEggs;
+    public static Resources resources;
 
     private ConnectedThread connectedThread;
 
@@ -48,6 +50,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         connectedThread = new ConnectedThread(context, MainActivity.connectedSocket);
         connectedThread.start();
         opponentEggs = new ArrayList<>();
+        resources = getResources();
     }
 
     @Override
@@ -104,7 +107,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             else{
                 x = (int)(-64f / SCALE_RATIO);
             }
-            Egg tempEgg = new Egg(x, (int)y, (int)slingshot.width / 2, (int)slingshot.height / 3,
+            Egg tempEgg = new Egg(x, (int)y, (int)(68 / SCALE_RATIO), (int)(82 / SCALE_RATIO),
                     BitmapFactory.decodeResource(getResources(), R.drawable.egg));
             tempEgg.velocity.set(velX, velY);
             tempEgg.inAir = true;
@@ -133,17 +136,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void update(){
-        Egg egg = slingshot.egg;
-        if(MainActivity.CONNECTION.equals("SERVER")){
-            if(egg.position.getX() > WIDTH){
-                sendEggInformation(egg);
-            }
-        }
-        else{
-            if(egg.position.getX() < -egg.width){
-                sendEggInformation(egg);
-            }
-        }
+        checkEggEdge(slingshot.egg);
         for(Egg currentEgg : opponentEggs){
             currentEgg.update();
             if(currentEgg.position.getY() > HEIGHT){
@@ -174,6 +167,19 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             paint.setColor(Color.BLACK);
             paint.setTextSize(64f / SCALE_RATIO);
             canvas.drawText(String.valueOf(score), WIDTH / 2, 100f / SCALE_RATIO, paint);
+        }
+    }
+
+    public void checkEggEdge(Egg egg){
+        if(MainActivity.CONNECTION.equals("SERVER")){
+            if(egg.position.getX() > WIDTH){
+                sendEggInformation(egg);
+            }
+        }
+        else{
+            if(egg.position.getX() < -egg.width){
+                sendEggInformation(egg);
+            }
         }
     }
 
