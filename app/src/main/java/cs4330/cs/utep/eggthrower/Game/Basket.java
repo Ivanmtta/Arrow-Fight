@@ -40,15 +40,17 @@ public class Basket {
             tics = 0;
         }
         if(displayAnimation){
-            if(animationTics >= 20){
+            if(animationTics >= 5){
                 flashSprite = !flashSprite;
                 maxFlashes ++;
                 animationTics = 0;
             }
             animationTics ++;
         }
-        if(maxFlashes >= 5){
+        if(maxFlashes >= 10){
             displayAnimation = false;
+            flashSprite = false;
+            maxFlashes = 0;
         }
         tics ++;
     }

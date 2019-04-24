@@ -44,7 +44,7 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
     public static final UUID APP_UUID = UUID.fromString("7bbc96be-5366-11e9-8647-d663bd873d93");
     /* Flag to check if receiver has been register */
     private boolean receiverEnabled;
-
+    /* String to identify the type of connection, SERVER/CLIENT */
     public static String CONNECTION;
 
     /**

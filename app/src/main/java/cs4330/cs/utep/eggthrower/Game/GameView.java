@@ -53,8 +53,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceCreated(SurfaceHolder holder){
         paint = new Paint();
-//        Typeface font = Typeface.createFromAsset(getContext().getAssets(), "font/font.ttf");
-//        paint.setTypeface(font);
         WIDTH = getWidth();
         HEIGHT = getHeight();
         SCALE_RATIO = 1920f / WIDTH;
@@ -174,8 +172,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             }
             basket.render(canvas);
             paint.setColor(Color.BLACK);
-            paint.setTextSize(64f);
-            canvas.drawText(String.valueOf(score), 100, 100, paint);
+            paint.setTextSize(64f / SCALE_RATIO);
+            canvas.drawText(String.valueOf(score), WIDTH / 2, 100f / SCALE_RATIO, paint);
         }
     }
 
