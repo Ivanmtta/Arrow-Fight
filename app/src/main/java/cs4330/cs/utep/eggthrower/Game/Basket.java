@@ -1,10 +1,12 @@
 package cs4330.cs.utep.eggthrower.Game;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
 import cs4330.cs.utep.eggthrower.MainActivity;
+import cs4330.cs.utep.eggthrower.R;
 
 public class Basket {
 
@@ -20,7 +22,9 @@ public class Basket {
     private boolean flashSprite;
     private int maxFlashes;
 
-    public Basket(int width, int height, Bitmap sprite){
+    public Basket(){
+        width = 152f / GameView.SCALE_RATIO;
+        height = 348f / GameView.SCALE_RATIO;
         basketStates = new float[]{0, (GameView.HEIGHT / 2f) - (height / 2f), GameView.HEIGHT - height};
         if(MainActivity.CONNECTION.equals("SERVER")){
             position = new Vector2(40f / GameView.SCALE_RATIO, basketStates[stateIndex]);
@@ -28,9 +32,12 @@ public class Basket {
         else{
             position = new Vector2(1720f / GameView.SCALE_RATIO, basketStates[stateIndex]);
         }
-        this.width = width;
-        this.height = height;
-        this.sprite = Bitmap.createScaledBitmap(sprite, width, height, true);
+        if(MainActivity.CONNECTION.equals("SERVER")){
+            sprite = Bitmap.createScaledBitmap(AssetManager.basket, (int)width, (int)height, true);
+        }
+        else{
+            sprite = Bitmap.createScaledBitmap(AssetManager.basketClient, (int)width, (int)height, true);
+        }
     }
 
     public void update(){

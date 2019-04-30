@@ -1,11 +1,7 @@
 package cs4330.cs.utep.eggthrower.Game;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Rect;
-
-import cs4330.cs.utep.eggthrower.R;
 
 public class Egg {
 
@@ -16,22 +12,13 @@ public class Egg {
     private Bitmap sprite;
     public boolean moving;
     public boolean inAir;
-    private boolean exploding;
-    private Animation explodeAnimation;
 
-    public Egg(int x, int y, int width, int height, Bitmap sprite){
+    public Egg(int x, int y){
         position = new Vector2(x, y);
         velocity = new Vector2(0f, 0f);
-        this.width = width;
-        this.height = height;
-        this.sprite = Bitmap.createScaledBitmap(sprite, width, height, true);
-        initializeAnimation();
-    }
-
-    public void initializeAnimation(){
-        Bitmap[] frames = new Bitmap[4];
-        frames[0] = BitmapFactory.decodeResource(GameView.resources, R.drawable.basket);
-        explodeAnimation = new Animation(frames, .25f);
+        width = 64f / GameView.SCALE_RATIO;
+        height = 82f / GameView.SCALE_RATIO;
+        sprite = Bitmap.createScaledBitmap(AssetManager.egg, (int)width, (int)height, true);
     }
 
     public void update(){
@@ -40,31 +27,11 @@ public class Egg {
             velocity.setY(velocity.getY() + 0.35f);
             velocity.setX(velocity.getX() * 0.99f);
             velocity.setY(velocity.getY() * 0.99f);
-            if(!exploding) {
-                for (Egg currentEgg : GameView.opponentEggs) {
-                    if (this.contains(currentEgg)) {
-                        explode();
-                    }
-                }
-            }
-            else{
-                explodeAnimation.play();
-            }
         }
     }
 
     public void render(Canvas canvas){
-        if(exploding){
-            canvas.drawBitmap(explodeAnimation.getCurrentFrame(), position.getX(), position.getY(), null);
-        }
-        else{
-            canvas.drawBitmap(sprite, position.getX(), position.getY(), null);
-        }
-    }
-
-    public void explode(){
-        exploding = true;
-        velocity.set(0f, 0f);
+        canvas.drawBitmap(sprite, position.getX(), position.getY(), null);
     }
 
     public void launch(double angle, double force){
@@ -76,15 +43,5 @@ public class Egg {
         int extra = (int)(50f / GameView.SCALE_RATIO);
         return (position.getX() - extra <= vector.getX()) && (vector.getX() < position.getX() + width + extra) &&
                 ((position.getY() - extra <= vector.getY()) && (position.getY() < position.getY() + height + extra));
-    }
-
-    public boolean contains(Egg egg){
-        Rect eggHitBox = new Rect(
-                (int) egg.position.getX(),
-                (int) egg.position.getY(),
-                (int) (egg.position.getX() + egg.width),
-                (int) (egg.position.getY() + egg.height));
-        Rect hitBox = new Rect((int)position.getX(), (int)position.getY(), (int)(position.getX() + width), (int)(position.getY() + height));
-        return hitBox.contains(eggHitBox);
     }
 }

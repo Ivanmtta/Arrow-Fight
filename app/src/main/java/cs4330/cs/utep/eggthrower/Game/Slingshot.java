@@ -19,9 +19,8 @@ public class Slingshot {
     private double angle;
     public Egg egg;
     private float pivot;
-    private Bitmap eggSprite;
 
-    public Slingshot(Bitmap spriteBack, Bitmap spriteFront, Bitmap eggSprite){
+    public Slingshot(){
         width = (int)(133f / GameView.SCALE_RATIO);
         height = (int)(256f / GameView.SCALE_RATIO);
         if(MainActivity.CONNECTION.equals("SERVER")){
@@ -30,14 +29,11 @@ public class Slingshot {
         else{
             position = new Vector2(1300f / GameView.SCALE_RATIO, 420f / GameView.SCALE_RATIO);
         }
-        this.spriteBack = Bitmap.createScaledBitmap(spriteBack, width, height, true);
-        this.spriteFront = Bitmap.createScaledBitmap(spriteFront, width, height, true);
+        spriteBack = Bitmap.createScaledBitmap(AssetManager.slingshotBack, width, height, true);
+        spriteFront = Bitmap.createScaledBitmap(AssetManager.slingshotFront, width, height, true);
         touch = new Vector2(0, 0);
         egg = new Egg((int)(position.getX() + (30 / GameView.SCALE_RATIO)),
-                      (int)(position.getY() + (30 / GameView.SCALE_RATIO)),
-                      (int)(68 / GameView.SCALE_RATIO), (int)(82 / GameView.SCALE_RATIO),
-                      eggSprite);
-        this.eggSprite = eggSprite;
+                      (int)(position.getY() + (30 / GameView.SCALE_RATIO)));
         pivot = (position.getY() + (30f / GameView.SCALE_RATIO));
     }
 
@@ -47,9 +43,7 @@ public class Slingshot {
         }
         if(egg.position.getX() > GameView.WIDTH || egg.position.getX() < -egg.width || egg.position.getY() > GameView.HEIGHT || egg.position.getY() < -GameView.WIDTH / 2){
             egg = new Egg((int)(position.getX() + (30 / GameView.SCALE_RATIO)),
-                    (int)(position.getY() + (30 / GameView.SCALE_RATIO)),
-                    (int)(68 / GameView.SCALE_RATIO), (int)(82 / GameView.SCALE_RATIO),
-                    eggSprite);
+                    (int)(position.getY() + (30 / GameView.SCALE_RATIO)));
         }
         egg.update();
     }

@@ -36,7 +36,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private Basket basket;
     private int score;
     public static List<Egg> opponentEggs;
-    public static Resources resources;
 
     private ConnectedThread connectedThread;
 
@@ -50,7 +49,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         connectedThread = new ConnectedThread(context, MainActivity.connectedSocket);
         connectedThread.start();
         opponentEggs = new ArrayList<>();
-        resources = getResources();
+        AssetManager.load(getResources());
     }
 
     @Override
@@ -59,19 +58,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         WIDTH = getWidth();
         HEIGHT = getHeight();
         SCALE_RATIO = 1920f / WIDTH;
-
-        slingshot = new Slingshot(
-                BitmapFactory.decodeResource(getResources(), R.drawable.slingshot_back),
-                BitmapFactory.decodeResource(getResources(), R.drawable.slingshot_front),
-                BitmapFactory.decodeResource(getResources(), R.drawable.egg));
-        Bitmap basketSprite;
-        if(MainActivity.CONNECTION.equals("SERVER")){
-            basketSprite = BitmapFactory.decodeResource(getResources(), R.drawable.basket);
-        }
-        else{
-            basketSprite = BitmapFactory.decodeResource(getResources(), R.drawable.basketclient);
-        }
-        basket = new Basket((int)(152f / SCALE_RATIO), (int)(348f / SCALE_RATIO), basketSprite);
+        slingshot = new Slingshot();
+        basket = new Basket();
         gameThread.setRunning(true);
         gameThread.start();
     }
@@ -107,8 +95,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             else{
                 x = (int)(-64f / SCALE_RATIO);
             }
-            Egg tempEgg = new Egg(x, (int)y, (int)(68 / SCALE_RATIO), (int)(82 / SCALE_RATIO),
-                    BitmapFactory.decodeResource(getResources(), R.drawable.egg));
+            Egg tempEgg = new Egg(x, (int)y);
             tempEgg.velocity.set(velX, velY);
             tempEgg.inAir = true;
             opponentEggs.add(tempEgg);
