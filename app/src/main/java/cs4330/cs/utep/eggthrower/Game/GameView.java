@@ -1,6 +1,8 @@
 package cs4330.cs.utep.eggthrower.Game;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +17,7 @@ import android.view.SurfaceView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import cs4330.cs.utep.eggthrower.ConnectedThread;
 import cs4330.cs.utep.eggthrower.MainActivity;
@@ -31,11 +34,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private final int WHITE = Color.rgb(240, 240, 242);
     private final int RED = Color.rgb(255, 161, 143);
     private final int BLUE = Color.rgb(153, 182, 255);
+    private final int PLAYING = 0;
+    private final int VICTORY = 1;
+    private final int DEFEAT = 2;
+    private int gameState = 0;
+    private int tics = 0;
+    private int bonusTic = 0;
 
     private Slingshot slingshot;
     private Basket basket;
     private int score;
     public static List<Egg> opponentEggs;
+    public static List<Bonus> bonuses;
 
     private ConnectedThread connectedThread;
 
@@ -48,8 +58,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         setFocusable(true);
         connectedThread = new ConnectedThread(context, MainActivity.connectedSocket);
         connectedThread.start();
-        opponentEggs = new ArrayList<>();
-        AssetManager.load(getResources());
     }
 
     @Override
@@ -58,6 +66,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         WIDTH = getWidth();
         HEIGHT = getHeight();
         SCALE_RATIO = 1920f / WIDTH;
+        AssetManager.load(getResources());
+        opponentEggs = new ArrayList<>();
+        bonuses = new ArrayList<>();
         slingshot = new Slingshot();
         basket = new Basket();
         gameThread.setRunning(true);
@@ -65,7 +76,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height){ }
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height){
+
+    }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder){
@@ -84,24 +97,32 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void dataReceived(String data){
         String[] dataList = data.split("/");
-        if(dataList[0].equals("EGG")){
-            float y = Float.parseFloat(dataList[1]);
-            float velX = Float.parseFloat(dataList[2]) * Float.parseFloat(dataList[4]);
-            float velY = Float.parseFloat(dataList[3]) * Float.parseFloat(dataList[4]);
-            int x;
-            if(MainActivity.CONNECTION.equals("SERVER")){
-                x = (int)(WIDTH - slingshot.egg.width);
-            }
-            else{
-                x = (int)(-64f / SCALE_RATIO);
-            }
-            Egg tempEgg = new Egg(x, (int)y);
-            tempEgg.velocity.set(velX, velY);
-            tempEgg.inAir = true;
-            opponentEggs.add(tempEgg);
-        }
-        else if(dataList[0].equals("POINT")){
-            score ++;
+        switch(dataList[0]){
+            case "END":
+                gameState = DEFEAT;
+                break;
+            case "EGG":
+                float y = Float.parseFloat(dataList[1]);
+                float velX = Float.parseFloat(dataList[2]) * Float.parseFloat(dataList[4]);
+                float velY = Float.parseFloat(dataList[3]) * Float.parseFloat(dataList[4]);
+                int x;
+                if (MainActivity.CONNECTION.equals("SERVER")) {
+                    x = (int) (WIDTH - slingshot.egg.width);
+                } else {
+                    x = (int) (-64f / SCALE_RATIO);
+                }
+                Egg tempEgg = new Egg(x, (int) y);
+                tempEgg.velocity.set(velX, velY);
+                tempEgg.inAir = true;
+                opponentEggs.add(tempEgg);
+                break;
+            case "POINT":
+                score++;
+                if (score >= 3) {
+                    connectedThread.send("END");
+                    gameState = VICTORY;
+                }
+                break;
         }
     }
 
@@ -123,37 +144,86 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void update(){
-        checkEggEdge(slingshot.egg);
-        for(Egg currentEgg : opponentEggs){
-            currentEgg.update();
-            if(currentEgg.position.getY() > HEIGHT){
-                opponentEggs.remove(currentEgg);
+        if(gameState == PLAYING){
+            checkEggEdge(slingshot.egg);
+            for(Egg currentEgg : opponentEggs){
+                currentEgg.update();
+                if(currentEgg.position.getY() > HEIGHT){
+                    opponentEggs.remove(currentEgg);
+                }
+                if(basket.contains(new Rect(
+                        (int)currentEgg.position.getX(),
+                        (int)currentEgg.position.getY(),
+                        (int)(currentEgg.position.getX() + currentEgg.width),
+                        (int)(currentEgg.position.getY() + currentEgg.height)))){
+                    connectedThread.send("POINT");
+                    opponentEggs.remove(currentEgg);
+                    basket.displayAnimation = true;
+                }
             }
-            if(basket.contains(new Rect(
-                    (int)currentEgg.position.getX(),
-                    (int)currentEgg.position.getY(),
-                    (int)(currentEgg.position.getX() + currentEgg.width),
-                    (int)(currentEgg.position.getY() + currentEgg.height)))){
-                connectedThread.send("POINT");
-                opponentEggs.remove(currentEgg);
-                basket.displayAnimation = true;
+            for(Bonus bonus: bonuses){
+                bonus.update();
             }
+            slingshot.update();
+            basket.update();
+            generateBonuses();
         }
-        slingshot.update();
-        basket.update();
+        else{
+            if(tics >= 60){
+                gameState = PLAYING;
+                score = 0;
+                tics = 0;
+                basket.displayAnimation = false;
+                bonuses.clear();
+            }
+            tics ++;
+        }
     }
 
     public void render(Canvas canvas){
         if(canvas != null){
             drawBackground(canvas);
-            slingshot.render(canvas, paint);
-            for(Egg currentEgg : opponentEggs){
-                currentEgg.render(canvas);
+            if(gameState == PLAYING){
+                slingshot.render(canvas, paint);
+                for(Egg currentEgg : opponentEggs){
+                    currentEgg.render(canvas);
+                }
+                basket.render(canvas);
+                paint.setColor(Color.BLACK);
+                paint.setTextSize(64f / SCALE_RATIO);
+                canvas.drawText(String.valueOf(score), WIDTH / 2, 100f / SCALE_RATIO, paint);
+                for(Bonus bonus: bonuses){
+                    bonus.render(canvas);
+                }
             }
-            basket.render(canvas);
-            paint.setColor(Color.BLACK);
-            paint.setTextSize(64f / SCALE_RATIO);
-            canvas.drawText(String.valueOf(score), WIDTH / 2, 100f / SCALE_RATIO, paint);
+            else if(gameState == VICTORY){
+                canvas.drawBitmap(AssetManager.victory, 700f / SCALE_RATIO, 420 / SCALE_RATIO, null);
+            }
+            else if(gameState == DEFEAT){
+                canvas.drawBitmap(AssetManager.defeat, 700f / SCALE_RATIO, 420 / SCALE_RATIO, null);
+            }
+        }
+    }
+
+    public void generateBonuses(){
+        if(bonusTic >= 180){
+            bonuses.add(new Bonus(generateRandomX(), HEIGHT));
+            bonusTic = 0;
+        }
+        bonusTic ++;
+    }
+
+    public float generateRandomX(){
+        Random rng = new Random();
+        int maxClient = (int)(950 / SCALE_RATIO);
+        int maxServer = (int)(1620 / SCALE_RATIO);
+        int minClient = (int)(0 / SCALE_RATIO);
+        int minServer = (int)(850 / SCALE_RATIO);
+        if(MainActivity.CONNECTION.equals("SERVER")){
+            return rng.nextInt((maxServer - minServer) + 1) + minServer;
+        }
+        else{
+            return rng.nextInt((maxClient - minClient) + 1) + minClient;
         }
     }
 
