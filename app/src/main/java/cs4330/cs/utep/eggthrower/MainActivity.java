@@ -128,8 +128,10 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
             if(BluetoothDevice.ACTION_FOUND.equals(action)) {
                 /* Get the bluetooth device and add it into the list of devices */
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                listOfDevices.add(device.getName() + "\n" + device.getAddress());
-                listAdapter.notifyDataSetChanged();
+                if(device.getName() != null) {
+                    listOfDevices.add(device.getName() + "\n" + device.getAddress());
+                    listAdapter.notifyDataSetChanged();
+                }
             }
         }
     };
