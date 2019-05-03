@@ -55,7 +55,9 @@ public class MainGameThread extends Thread{
             waitTime = targetTime - currentTime;
 
             try{
-                sleep(waitTime);
+                if(waitTime > 0){
+                    sleep(waitTime);
+                }
             }
             catch(Exception error){
                 error.printStackTrace();
