@@ -15,6 +15,11 @@ public class Vector2 {
         this.y += vector.getY();
     }
 
+    public void scale(float factor){
+        this.x *= factor;
+        this.y *= factor;
+    }
+
     public void set(float x, float y){
         this.x = x;
         this.y = y;

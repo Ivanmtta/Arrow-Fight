@@ -25,8 +25,7 @@ public class Egg {
         if(inAir){
             position.add(velocity);
             velocity.setY(velocity.getY() + 0.35f);
-            velocity.setX(velocity.getX() * 0.99f);
-            velocity.setY(velocity.getY() * 0.99f);
+            velocity.scale(0.99f);
         }
     }
 
