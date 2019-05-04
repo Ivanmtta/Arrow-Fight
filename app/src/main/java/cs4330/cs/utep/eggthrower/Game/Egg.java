@@ -2,6 +2,9 @@ package cs4330.cs.utep.eggthrower.Game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
+
+import cs4330.cs.utep.eggthrower.MainActivity;
 
 public class Egg {
 
@@ -12,6 +15,7 @@ public class Egg {
     private Bitmap sprite;
     public boolean moving;
     public boolean inAir;
+    public int value;
 
     public Egg(int x, int y){
         position = new Vector2(x, y);
@@ -19,6 +23,7 @@ public class Egg {
         width = 64f / GameView.SCALE_RATIO;
         height = 82f / GameView.SCALE_RATIO;
         sprite = Bitmap.createScaledBitmap(AssetManager.egg, (int)width, (int)height, true);
+        value = 1;
     }
 
     public void update(){
@@ -27,6 +32,7 @@ public class Egg {
             velocity.setY(velocity.getY() + 0.35f);
             velocity.scale(0.99f);
         }
+        checkBonusColision();
     }
 
     public void render(Canvas canvas){
@@ -38,9 +44,23 @@ public class Egg {
         inAir = true;
     }
 
+    private void checkBonusColision(){
+        for(Bonus bonus : GameView.bonuses){
+            if(intersects(new Rect((int)bonus.position.getX(), (int)bonus.position.getY(), (int)(bonus.position.getX() + bonus.width), (int)(bonus.position.getY() + bonus.height)))){
+                value *= 2;
+                GameView.bonuses.remove(bonus);
+            }
+        }
+    }
+
     public boolean contains(Vector2 vector){
         int extra = (int)(50f / GameView.SCALE_RATIO);
         return (position.getX() - extra <= vector.getX()) && (vector.getX() < position.getX() + width + extra) &&
                 ((position.getY() - extra <= vector.getY()) && (position.getY() < position.getY() + height + extra));
+    }
+
+    public boolean intersects(Rect rectangle){
+        Rect hitBox = new Rect((int)position.getX(), (int)position.getY(), (int)(position.getX() + width), (int)(position.getY() + height));
+        return hitBox.intersect(rectangle);
     }
 }

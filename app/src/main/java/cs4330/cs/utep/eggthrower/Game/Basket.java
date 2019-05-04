@@ -69,7 +69,7 @@ public class Basket {
     }
 
     public boolean contains(Rect rectangle){
-        Rect hitbox = new Rect((int)position.getX(), (int)position.getY(), (int)(position.getX() + width), (int)(position.getY() + height));
-        return hitbox.contains(rectangle);
+        Rect hitBox = new Rect((int)position.getX(), (int)position.getY(), (int)(position.getX() + width), (int)(position.getY() + height));
+        return hitBox.contains(rectangle);
     }
 }

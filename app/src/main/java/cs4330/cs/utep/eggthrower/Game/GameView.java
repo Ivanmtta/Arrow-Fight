@@ -1,16 +1,10 @@
 package cs4330.cs.utep.eggthrower.Game;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -21,7 +15,6 @@ import java.util.Random;
 
 import cs4330.cs.utep.eggthrower.ConnectedThread;
 import cs4330.cs.utep.eggthrower.MainActivity;
-import cs4330.cs.utep.eggthrower.R;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
@@ -76,9 +69,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height){
-
-    }
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height){ }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder){
@@ -114,11 +105,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 Egg tempEgg = new Egg(x, (int) y);
                 tempEgg.velocity.set(velX, velY);
                 tempEgg.inAir = true;
+                tempEgg.value = Integer.parseInt(dataList[5]);
                 opponentEggs.add(tempEgg);
                 break;
             case "POINT":
-                score++;
-                if (score >= 3) {
+                score += Integer.parseInt(dataList[1]);;
+                if (score >= 10) {
                     connectedThread.send("END");
                     gameState = VICTORY;
                 }
@@ -156,7 +148,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                         (int)currentEgg.position.getY(),
                         (int)(currentEgg.position.getX() + currentEgg.width),
                         (int)(currentEgg.position.getY() + currentEgg.height)))){
-                    connectedThread.send("POINT");
+                    connectedThread.send("POINT/" + currentEgg.value);
                     opponentEggs.remove(currentEgg);
                     basket.displayAnimation = true;
                 }
@@ -241,7 +233,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     public void sendEggInformation(Egg egg){
-        connectedThread.send("EGG/" + egg.position.getY() + "/" + egg.velocity.getX() + "/" + egg.velocity.getY() + "/" + GameView.SCALE_RATIO);
+        connectedThread.send("EGG/" + egg.position.getY() + "/" +
+                                      egg.velocity.getX() + "/" +
+                                      egg.velocity.getY() + "/" +
+                                      GameView.SCALE_RATIO + "/" +
+                                      egg.value);
     }
 
     public void drawBackground(Canvas canvas){
