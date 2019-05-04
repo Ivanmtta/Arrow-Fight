@@ -40,6 +40,9 @@ public class Slingshot {
     public void update(){
         if(pressed){
             angle = Math.atan2((pivot - touch.getY()), (position.getX() + (width / 2f)) - touch.getX());
+            if(!AssetManager.slingshotSound.isPlaying()){
+                AssetManager.slingshotSound.start();
+            }
         }
         if(egg.position.getX() > GameView.WIDTH || egg.position.getX() < -egg.width || egg.position.getY() > GameView.HEIGHT || egg.position.getY() < -GameView.WIDTH / 2){
             egg = new Egg((int)(position.getX() + (30 / GameView.SCALE_RATIO)),
@@ -82,6 +85,7 @@ public class Slingshot {
             double force = (float) Math.sqrt(Math.pow((position.getX() - touch.getX()), 2) + Math.pow((pivot - touch.getY()), 2));
             egg.launch(angle, force / 8);
             egg.moving = false;
+            AssetManager.launchSound.start();
         }
     }
 }

@@ -47,6 +47,7 @@ public class Egg {
             if(intersects(new Rect((int)bonus.position.getX(), (int)bonus.position.getY(), (int)(bonus.position.getX() + bonus.width), (int)(bonus.position.getY() + bonus.height)))){
                 value *= 2;
                 GameView.bonuses.remove(bonus);
+                AssetManager.pointSound.start();
             }
         }
     }

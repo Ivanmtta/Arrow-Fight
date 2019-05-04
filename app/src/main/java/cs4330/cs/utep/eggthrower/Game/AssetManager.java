@@ -1,8 +1,10 @@
 package cs4330.cs.utep.eggthrower.Game;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 
 import cs4330.cs.utep.eggthrower.R;
 
@@ -17,7 +19,11 @@ public class AssetManager {
     public static Bitmap victory;
     public static Bitmap defeat;
 
-    public static void load(Resources resources) {
+    public static MediaPlayer slingshotSound;
+    public static MediaPlayer launchSound;
+    public static MediaPlayer pointSound;
+
+    public static void load(Resources resources, Context context) {
         basket = BitmapFactory.decodeResource(resources, R.drawable.basket);
         basketClient = BitmapFactory.decodeResource(resources, R.drawable.basketclient);
         egg = BitmapFactory.decodeResource(resources, R.drawable.egg);
@@ -28,5 +34,9 @@ public class AssetManager {
         victory = Bitmap.createScaledBitmap(tempVictory, (int)(520 / GameView.SCALE_RATIO), (int)(150 / GameView.SCALE_RATIO), true);
         Bitmap tempDefeat = BitmapFactory.decodeResource(resources, R.drawable.defeat);
         defeat = Bitmap.createScaledBitmap(tempDefeat, (int)(520 / GameView.SCALE_RATIO), (int)(150 / GameView.SCALE_RATIO), true);
+
+        slingshotSound = MediaPlayer.create(context, R.raw.slingshoot);
+        launchSound = MediaPlayer.create(context, R.raw.launch);
+        pointSound = MediaPlayer.create(context, R.raw.point);
     }
 }

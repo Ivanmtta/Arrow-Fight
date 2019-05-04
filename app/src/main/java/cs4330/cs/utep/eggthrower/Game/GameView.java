@@ -59,7 +59,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         WIDTH = getWidth();
         HEIGHT = getHeight();
         SCALE_RATIO = 1920f / WIDTH;
-        AssetManager.load(getResources());
+        AssetManager.load(getResources(), getContext());
         opponentEggs = new ArrayList<>();
         bonuses = new ArrayList<>();
         slingshot = new Slingshot();
@@ -151,6 +151,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                     connectedThread.send("POINT/" + currentEgg.value);
                     opponentEggs.remove(currentEgg);
                     basket.displayAnimation = true;
+                    AssetManager.pointSound.start();
                 }
             }
             for(Bonus bonus: bonuses){
