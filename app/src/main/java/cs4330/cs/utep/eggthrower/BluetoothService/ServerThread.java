@@ -1,4 +1,4 @@
-package cs4330.cs.utep.eggthrower;
+package cs4330.cs.utep.eggthrower.BluetoothService;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
@@ -19,7 +19,8 @@ public class ServerThread extends Thread {
     /**
      * Constructor used to initialize server thread to start listening
      * to client sockets.
-     * @param context Reference to the context of the MainActivity to link listener.
+     *
+     * @param context          Reference to the context of the MainActivity to link listener.
      * @param bluetoothAdapter Local device bluetooth adapter
      */
     public ServerThread(Context context, BluetoothAdapter bluetoothAdapter) {
@@ -27,8 +28,7 @@ public class ServerThread extends Thread {
         try {
             /* Initialize server socket by using an universal unique identifier */
             serverSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord(MainActivity.APP_NAME, MainActivity.APP_UUID);
-        }
-        catch(Exception error) {
+        } catch (Exception error) {
             error.printStackTrace();
         }
     }
@@ -50,12 +50,11 @@ public class ServerThread extends Thread {
                 break;
             }
             /* If a client socket connected */
-            if(socket != null){
+            if (socket != null) {
                 try {
                     /* Initialize a connected thread in the MainActivity */
                     listener.initializeConnectedThread(socket);
-                }
-                catch(Exception error) {
+                } catch (Exception error) {
                     error.printStackTrace();
                 }
             }
@@ -65,7 +64,7 @@ public class ServerThread extends Thread {
     /**
      * Listener used to make callbacks to the MainActiviry.
      */
-    public interface ServerListener{
+    public interface ServerListener {
         void initializeConnectedThread(BluetoothSocket socket);
     }
 }

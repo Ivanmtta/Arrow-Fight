@@ -1,4 +1,4 @@
-package cs4330.cs.utep.eggthrower;
+package cs4330.cs.utep.eggthrower.BluetoothService;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -17,18 +17,18 @@ public class ClientThread extends Thread {
 
     /**
      * Constructor used to initialize the client socket.
-     * @param context Reference to the context of the MainActivity to link listener
-     * @param device Device that we are trying to connect to
+     *
+     * @param context          Reference to the context of the MainActivity to link listener
+     * @param device           Device that we are trying to connect to
      * @param bluetoothAdapter Local device bluetooth adapter
      */
-    public ClientThread(Context context, BluetoothDevice device, BluetoothAdapter bluetoothAdapter){
+    public ClientThread(Context context, BluetoothDevice device, BluetoothAdapter bluetoothAdapter) {
         this.bluetoothAdapter = bluetoothAdapter;
         listener = (ClientListener) context;
-        try{
+        try {
             /* Get a BluetoothSocket to connect with the given BluetoothDevice */
             socket = device.createRfcommSocketToServiceRecord(MainActivity.APP_UUID);
-        }
-        catch(Exception error){
+        } catch (Exception error) {
             error.printStackTrace();
         }
     }
@@ -37,20 +37,18 @@ public class ClientThread extends Thread {
      * Method that will be waiting until the client is able to
      * connect to the other bluetooth capable device.
      */
-    public void run(){
+    public void run() {
         /* Cancel discovery because it otherwise slows down the connection */
         bluetoothAdapter.cancelDiscovery();
-        try{
+        try {
             /* Connect ti the remote device */
             socket.connect();
-        }
-        catch(Exception error){
+        } catch (Exception error) {
             error.printStackTrace();
             /* Unable to connect to the device */
             try {
                 socket.close();
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -61,7 +59,7 @@ public class ClientThread extends Thread {
     /**
      * Listener used to make callbacks to the MainActiviry.
      */
-    public interface ClientListener{
+    public interface ClientListener {
         void initializeConnectedThread(BluetoothSocket socket);
     }
 }

@@ -19,7 +19,7 @@
             android:screenOrientation="landscape">
         </activity>
         <activity
-            android:name="cs4330.cs.utep.eggthrower.MainActivity"
+            android:name="cs4330.cs.utep.eggthrower.BluetoothService.MainActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

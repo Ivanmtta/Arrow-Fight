@@ -1,4 +1,4 @@
-package cs4330.cs.utep.eggthrower;
+package cs4330.cs.utep.eggthrower.BluetoothService;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import cs4330.cs.utep.eggthrower.Game.GameActivity;
+import cs4330.cs.utep.eggthrower.R;
 
 /**
  * Entry point and menu of the application that allows the user
@@ -49,6 +50,7 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
 
     /**
      * Initialize activity's layout and initialize bluetooth connection.
+     *
      * @param savedInstanceState data from the previews close activity
      */
     @Override
@@ -82,8 +84,8 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
      * This method checks the current android version, and if the version is 22 or
      * newest it requests location access.
      */
-    private void requestPermissions(){
-        if(Build.VERSION.SDK_INT >= 23) {
+    private void requestPermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {
             /* Request location permission */
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
@@ -98,15 +100,14 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
     private void initializeBluetooth() {
         /* Get the default local device Bluetooth adapter */
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if(bluetoothAdapter != null) {
+        if (bluetoothAdapter != null) {
             /* Device supports bluetooth */
-            if(!bluetoothAdapter.isEnabled()) {
+            if (!bluetoothAdapter.isEnabled()) {
                 /* Start activity to ask the user to enable bluetooth */
                 Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBluetooth, REQUEST_ENABLE_BLUETOOTH);
             }
-        }
-        else {
+        } else {
             displayMessage("Your device does not support bluetooth");
         }
     }
@@ -125,10 +126,10 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             /* The intent received is a bluetooth device */
-            if(BluetoothDevice.ACTION_FOUND.equals(action)) {
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 /* Get the bluetooth device and add it into the list of devices */
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if(device.getName() != null) {
+                if (device.getName() != null) {
                     listOfDevices.add(device.getName() + "\n" + device.getAddress());
                     listAdapter.notifyDataSetChanged();
                 }
@@ -138,30 +139,31 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
 
     /**
      * Method called after an activity started returns with a result.
+     *
      * @param requestCode Request code originally supplied to startActivityForResult()
-     * @param resultCode Result code returned by the child activity through its setResult()
-     * @param data Result data from the caller
+     * @param resultCode  Result code returned by the child activity through its setResult()
+     * @param data        Result data from the caller
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         /* If the request code returned is the same used to enable bluetooth */
-        if(requestCode == REQUEST_ENABLE_BLUETOOTH) {
+        if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             /* Bluetooth is enabled */
-            if(resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK) {
                 displayMessage("Bluetooth is now enabled");
             }
             /* Bluetooth enabling was cancelled */
-            else if(resultCode == RESULT_CANCELED) {
+            else if (resultCode == RESULT_CANCELED) {
                 displayMessage("Failed to initialize bluetooth");
             }
         }
         /* if the request code returned is the same used to make device discoverable */
-        else if(requestCode == REQUEST_DISCOVER_BLUETOOTH) {
+        else if (requestCode == REQUEST_DISCOVER_BLUETOOTH) {
             /* Device is now discoverable for 120 seconds */
-            if(resultCode == 120) {
+            if (resultCode == 120) {
                 displayMessage("Device is now discoverable");
             }
             /* The user did not enabled discoverability */
-            else if(resultCode == RESULT_CANCELED){
+            else if (resultCode == RESULT_CANCELED) {
                 displayMessage("Failed to make device discoverable");
             }
         }
@@ -170,6 +172,7 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
     /**
      * This method will be executed when the user presses the button to
      * scan for bluetooth devices.
+     *
      * @param view The view that invoke this click listener
      */
     public void scanForDevices(View view) {
@@ -185,11 +188,12 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
     /**
      * This method will be executed when the user presses the button to
      * host a game as a server.
+     *
      * @param view The view that invoke this click listener
      */
     public void makeDeviceDiscoverable(View view) {
         /* if the device is not discovering devices, start an activity to enable it */
-        if(!bluetoothAdapter.isDiscovering()) {
+        if (!bluetoothAdapter.isDiscovering()) {
             Intent startDiscovering = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             startActivityForResult(startDiscovering, REQUEST_DISCOVER_BLUETOOTH);
         }
@@ -202,10 +206,11 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
     /**
      * This method will be invoked from the client or server thread once both
      * the server and client threads are connected.
+     *
      * @param connectedSocket connected socket to create a connected thread
      */
     @Override
-    public void initializeConnectedThread(BluetoothSocket connectedSocket){
+    public void initializeConnectedThread(BluetoothSocket connectedSocket) {
         MainActivity.connectedSocket = connectedSocket;
         /* Launch the Game activity with both sockets connected */
         Intent intent = new Intent(this, GameActivity.class);
@@ -219,13 +224,14 @@ public class MainActivity extends Activity implements ClientThread.ClientListene
     protected void onDestroy() {
         super.onDestroy();
         /* Stop listening from bluetooth devices */
-        if(receiverEnabled) {
+        if (receiverEnabled) {
             unregisterReceiver(receiver);
         }
     }
 
     /**
      * Displays a message to the screen.
+     *
      * @param message message that will be displayed
      */
     public void displayMessage(String message) {
