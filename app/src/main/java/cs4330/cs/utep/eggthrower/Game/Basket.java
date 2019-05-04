@@ -1,12 +1,10 @@
 package cs4330.cs.utep.eggthrower.Game;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
 import cs4330.cs.utep.eggthrower.MainActivity;
-import cs4330.cs.utep.eggthrower.R;
 
 public class Basket {
 

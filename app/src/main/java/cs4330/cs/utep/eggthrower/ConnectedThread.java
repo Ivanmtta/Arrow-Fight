@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import android.content.Context;
 
 /**
- * This class is used to
+ * This class is used tomanage input/output of a connected thread
  */
 public class ConnectedThread extends Thread{
 

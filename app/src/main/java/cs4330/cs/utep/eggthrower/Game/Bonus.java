@@ -3,8 +3,6 @@ package cs4330.cs.utep.eggthrower.Game;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import cs4330.cs.utep.eggthrower.MainActivity;
-
 public class Bonus{
 
     public Vector2 position;

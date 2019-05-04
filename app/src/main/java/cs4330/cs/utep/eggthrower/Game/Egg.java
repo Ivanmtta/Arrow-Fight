@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 
-import cs4330.cs.utep.eggthrower.MainActivity;
-
 public class Egg {
 
     public Vector2 position;
