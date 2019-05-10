@@ -10,6 +10,6 @@ basket using a slingshot.
 ```
 
 ## Screenshots
-| Client Side | Server Side |
-| ---------------------------- | -------------------------------- |
-| ![](screenshots/ss2.gif?raw=true) | ![](screenshots/ss3.png?raw=true) |
+Client Side | Server Side
+---------------------------- | --------------------------------
+![](screenshots/ss2.gif?raw=true) | ![](screenshots/ss3.png?raw=true)
